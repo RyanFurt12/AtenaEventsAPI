@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.atena.events.model.Event;
 import com.atena.events.model.User;
+import com.atena.events.model.dto.EventDTO;
 import com.atena.events.repository.EventRepository;
 import com.atena.events.repository.UserRepository;
 
@@ -21,54 +22,59 @@ public class EventService {
     @Autowired
     private UserRepository userRepository;
 
-    public Event getEvento(Long id) {
+    public Event getEvent(Long id) {
         return eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Evento não encontrado"));
     }
 
-    public Event criarEvento(Event evento, Long ownerId) {
+    public Event createEvent(EventDTO dto, Long ownerId) {
         User owner = userRepository.findById(ownerId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        evento.setOwner(owner);
-        return eventRepository.save(evento);
+        Event event = new Event();
+        event.setTitle(dto.getTitle());
+        event.setDescription(dto.getDescription());
+        event.setDate(dto.getDate());
+        event.setOwner(owner);
+        
+        return eventRepository.save(event);
     }
 
-    public Event atualizarEvento(Long id, Event novoEvento) {
-        Event evento = getEvento(id);
+    public Event updateEvent(Long id, EventDTO dto) {
+        Event event = getEvent(id);
+        
+        event.setTitle(dto.getTitle());
+        event.setType(dto.getType());
+        event.setDescription(dto.getDescription());
+        event.setDate(dto.getDate());
 
-        evento.setTitulo(novoEvento.getTitulo());
-        evento.setDescricao(novoEvento.getDescricao());
-        evento.setDate(novoEvento.getDate());
-
-        return eventRepository.save(evento);
+        return eventRepository.save(event);
     }
 
-    public void deletarEvento(Long id) {
-        Event evento = getEvento(id);
-        eventRepository.delete(evento);
+    public void deleteEvent(Long id) {
+        Event event = getEvent(id);
+        eventRepository.delete(event);
     }
 
-    public List<Event> listarCriados(Long userId) {
+    public List<Event> listEventsCreatedBy(Long userId) {
         return eventRepository.findByOwnerId(userId);
     }
 
-    public List<Event> listarParticipa(Long userId) {
-        return eventRepository.findByParticipantesId(userId);
+    public List<Event> listEventsParticipatedBy(Long userId) {
+        return eventRepository.findByParticipantId(userId);
     }
 
-    public List<Event> recomendarEventos() {
-        List<Event> todos = (List<Event>) eventRepository.findAll();
+    public List<Event> listRecommendedEvents() {
+        List<Event> allEvents = (List<Event>) eventRepository.findAll();
 
-        Collections.shuffle(todos);
+        Collections.shuffle(allEvents);
 
-        return todos.stream()
+        return allEvents.stream()
                 .limit(5)
                 .collect(Collectors.toList());
     }
 
-    //Participantes
-    public Event participar(Long eventId, Long userId) {
+    public Event participate(Long eventId, Long userId) {
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Evento não encontrado"));
@@ -76,15 +82,15 @@ public class EventService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        if (event.getParticipantes().contains(user)) {
-            throw new RuntimeException("Usuário já participa deste evento.");
+        if (event.getParticipants().contains(user)) {
+            throw new RuntimeException("Usuário já participa deste event.");
         }
 
-        event.getParticipantes().add(user);
+        event.getParticipants().add(user);
         return eventRepository.save(event);
     }
 
-    public Event sair(Long eventId, Long userId) {
+    public Event getOutParticipate(Long eventId, Long userId) {
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Evento não encontrado"));
@@ -92,21 +98,21 @@ public class EventService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        event.getParticipantes().remove(user);
+        event.getParticipants().remove(user);
         return eventRepository.save(event);
     }
 
-    public List<User> listarParticipantes(Long eventId) {
+    public List<User> listParticipantsByEventId(Long eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Evento não encontrado"));
 
-        return event.getParticipantes();
+        return event.getParticipants();
     }
 
-    public List<Event> listarEventosDoUsuario(Long userId) {
+    public List<Event> listEventsByUserId(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        return user.getEventosParticipando();
+        return user.getParticipatedEvents();
     }
 }

@@ -14,54 +14,55 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.atena.events.model.Event;
+import com.atena.events.model.dto.EventDTO;
 import com.atena.events.service.EventService;
 
 @RestController
-@RequestMapping("/eventos")
+@RequestMapping("/events")
 public class EventController {
 
     @Autowired
     private EventService eventService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Event> getEvento(@PathVariable Long id) {
-        return ResponseEntity.ok(eventService.getEvento(id));
+    public ResponseEntity<Event> getEvent(@PathVariable Long id) {
+        return ResponseEntity.ok(eventService.getEvent(id));
     }
 
     @PostMapping("/create/{ownerId}")
-    public ResponseEntity<Event> criarEvento(
-            @RequestBody Event evento,
+    public ResponseEntity<Event> createEvent(
+            @RequestBody EventDTO dto,
             @PathVariable Long ownerId
     ) {
-        return ResponseEntity.ok(eventService.criarEvento(evento, ownerId));
+        return ResponseEntity.ok(eventService.createEvent(dto, ownerId));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Event> atualizarEvento(
+    public ResponseEntity<Event> updateEvent(
             @PathVariable Long id,
-            @RequestBody Event novoEvento
+            @RequestBody EventDTO dto
     ) {
-        return ResponseEntity.ok(eventService.atualizarEvento(id, novoEvento));
+        return ResponseEntity.ok(eventService.updateEvent(id, dto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarEvento(@PathVariable Long id) {
-        eventService.deletarEvento(id);
+    public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
+        eventService.deleteEvent(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/criados/{userId}")
-    public ResponseEntity<List<Event>> listarCriados(@PathVariable Long userId) {
-        return ResponseEntity.ok(eventService.listarCriados(userId));
+    @GetMapping("/created_by/{userId}")
+    public ResponseEntity<List<Event>> listEventsCreatedBy(@PathVariable Long userId) {
+        return ResponseEntity.ok(eventService.listEventsCreatedBy(userId));
     }
 
-    @GetMapping("/participa/{userId}")
-    public ResponseEntity<List<Event>> listarParticipa(@PathVariable Long userId) {
-        return ResponseEntity.ok(eventService.listarParticipa(userId));
+    @GetMapping("/participated_by/{userId}")
+    public ResponseEntity<List<Event>> listEventsParticipatedBy(@PathVariable Long userId) {
+        return ResponseEntity.ok(eventService.listEventsParticipatedBy(userId));
     }
 
-    @GetMapping("/recomendacoes")
-    public ResponseEntity<List<Event>> recomendar() {
-        return ResponseEntity.ok(eventService.recomendarEventos());
+    @GetMapping("/recommended")
+    public ResponseEntity<List<Event>> listRecommendedEvents() {
+        return ResponseEntity.ok(eventService.listRecommendedEvents());
     }
 }

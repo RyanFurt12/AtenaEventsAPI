@@ -12,33 +12,33 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.atena.events.model.Event;
 import com.atena.events.model.User;
-import com.atena.events.model.dto.ParticipacaoDTO;
+import com.atena.events.model.dto.ParticipateDTO;
 import com.atena.events.service.EventService;
 
 @RestController
-@RequestMapping("/participacoes")
+@RequestMapping("/participate")
 public class ParticipacaoController {
 
     @Autowired
     private EventService eventService;
 
-    @PostMapping("/entrar")
-    public Event participar(@RequestBody ParticipacaoDTO dto) {
-        return eventService.participar(dto.getEventId(), dto.getUserId());
+    @PostMapping("/in")
+    public Event participate(@RequestBody ParticipateDTO dto) {
+        return eventService.participate(dto.getEventId(), dto.getUserId());
     }
 
-    @PostMapping("/sair")
-    public Event sair(@RequestBody ParticipacaoDTO dto) {
-        return eventService.sair(dto.getEventId(), dto.getUserId());
+    @PostMapping("/out")
+    public Event getOutParticipate(@RequestBody ParticipateDTO dto) {
+        return eventService.getOutParticipate(dto.getEventId(), dto.getUserId());
     }
 
-    @GetMapping("/evento/{id}")
-    public List<User> participantes(@PathVariable Long id) {
-        return eventService.listarParticipantes(id);
+    @GetMapping("/event/{id}")
+    public List<User> listParticipantsByEventId(@PathVariable Long eventId) {
+        return eventService.listParticipantsByEventId(eventId);
     }
 
-    @GetMapping("/usuario/{id}")
-    public List<Event> eventosDoUsuario(@PathVariable Long id) {
-        return eventService.listarEventosDoUsuario(id);
+    @GetMapping("/user/{id}")
+    public List<Event> listEventsByUserId(@PathVariable Long userId) {
+        return eventService.listEventsByUserId(userId);
     }
 }

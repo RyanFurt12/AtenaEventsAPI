@@ -7,5 +7,5 @@ import org.springframework.data.repository.CrudRepository;
 import com.atena.events.model.Comment;
 
 public interface CommentRepository extends CrudRepository<Comment, Long> {
-    List<Comment> findByEventoId(Long eventoId);
+    List<Comment> findByEventId(Long eventId);
 }

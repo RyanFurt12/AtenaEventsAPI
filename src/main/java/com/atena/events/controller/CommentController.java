@@ -13,41 +13,41 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.atena.events.model.Comment;
-import com.atena.events.model.dto.ComentarioCreateDTO;
-import com.atena.events.model.dto.ComentarioUpdateDTO;
+import com.atena.events.model.dto.CommentCreateDTO;
+import com.atena.events.model.dto.CommentUpdateDTO;
 import com.atena.events.service.CommentService;
 
 @RestController
-@RequestMapping("/comentarios")
+@RequestMapping("/comments")
 public class CommentController {
 
     @Autowired
-    private CommentService comentarioService;
+    private CommentService commentService;
 
-    @GetMapping("/evento/{eventoId}")
-    public List<Comment> listarPorEvento(@PathVariable Long eventoId) {
-        return comentarioService.listarPorEvento(eventoId);
+    @GetMapping("/event/{eventId}")
+    public List<Comment> listCommentsByEventId(@PathVariable Long eventId) {
+        return commentService.listCommentsByEventId(eventId);
     }
 
     @PostMapping
-    public Comment criarComentario(@RequestBody ComentarioCreateDTO dto) {
-        return comentarioService.criarComentario(
-                dto.getEventoId(),
-                dto.getUsuarioId(),
-                dto.getTexto()
+    public Comment createComment(@RequestBody CommentCreateDTO dto) {
+        return commentService.createComment(
+                dto.getEventId(),
+                dto.getUserId(),
+                dto.getText()
         );
     }
 
     @PutMapping("/{id}")
-    public Comment atualizar(
+    public Comment updateComment(
             @PathVariable Long id,
-            @RequestBody ComentarioUpdateDTO dto
+            @RequestBody CommentUpdateDTO dto
     ) {
-        return comentarioService.atualizarComentario(id, dto.getTexto());
+        return commentService.updateComment(id, dto.getText());
     }
 
     @DeleteMapping("/{id}")
-    public void deletar(@PathVariable Long id) {
-        comentarioService.deletarComentario(id);
+    public void deleteComment(@PathVariable Long id) {
+        commentService.deleteComment(id);
     }
 }

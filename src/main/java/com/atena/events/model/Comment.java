@@ -16,20 +16,18 @@ public class Comment implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String texto;
+    private String text;
 
-    private LocalDateTime criadoEm;
-    private LocalDateTime atualizadoEm;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
-    // Comentário pertence a um evento
     @ManyToOne
-    @JoinColumn(name = "evento_id")
+    @JoinColumn(name = "event_id")
     @JsonBackReference
-    private Event evento;
+    private Event event;
 
-    // Comentário tem um autor
     @ManyToOne
-    @JoinColumn(name = "autor_id")
+    @JoinColumn(name = "author_id")
     @JsonBackReference
-    private User autor;
+    private User author;
 }

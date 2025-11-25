@@ -1,7 +1,5 @@
 package com.atena.events.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,8 +24,8 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
-    public User registrar(@RequestBody RegisterDTO dto) {
-        return userService.registrar(dto);
+    public User register(@RequestBody RegisterDTO dto) {
+        return userService.register(dto);
     }
 
     @PostMapping("/login")
@@ -36,23 +34,18 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User get(@PathVariable Long id) {
-        return userService.buscar(id);
-    }
-
-    @GetMapping
-    public List<User> listar() {
-        return userService.listar();
+    public User getUserById(@PathVariable Long userId) {
+        return userService.getUserById(userId);
     }
 
     @PutMapping("/{id}")
-    public User atualizar(@PathVariable Long id, @RequestBody RegisterDTO dto) {
-        return userService.atualizar(id, dto);
+    public User updateUserById(@PathVariable Long userId, @RequestBody RegisterDTO dto) {
+        return userService.updateUserById(userId, dto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletar(@PathVariable Long id) {
-        userService.deletar(id);
+    public ResponseEntity<?> deleteUserById(@PathVariable Long userId) {
+        userService.deleteUserById(userId);
         return ResponseEntity.ok().build();
     }
 }

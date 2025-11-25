@@ -17,18 +17,18 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nome;
+    private String name;
     private String email;
-    private String senha;
+    private String password;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<Event> eventosCriados;
+    private List<Event> createdEvents;
 
-    @ManyToMany(mappedBy = "participantes")
-    private List<Event> eventosParticipando;
+    @ManyToMany(mappedBy = "participants")
+    private List<Event> participatedEvents;
 
-    @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<Comment> comentarios;
+    private List<Comment> comments;
 }

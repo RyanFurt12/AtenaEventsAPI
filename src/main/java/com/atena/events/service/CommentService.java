@@ -17,48 +17,48 @@ import com.atena.events.repository.UserRepository;
 public class CommentService {
 
     @Autowired
-    private CommentRepository comentarioRepository;
+    private CommentRepository commentRepository;
 
     @Autowired
-    private EventRepository eventoRepository;
+    private EventRepository eventRepository;
 
     @Autowired
-    private UserRepository usuarioRepository;
+    private UserRepository userRepository;
 
-    public List<Comment> listarPorEvento(Long eventoId) {
-        return comentarioRepository.findByEventoId(eventoId);
+    public List<Comment> listCommentsByEventId(Long eventId) {
+        return commentRepository.findByEventId(eventId);
     }
 
-    public Comment criarComentario(Long eventoId, Long usuarioId, String texto) {
-        Event evento = eventoRepository.findById(eventoId)
+    public Comment createComment(Long eventId, Long userId, String text) {
+        Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Evento não encontrado"));
 
-        User usuario = usuarioRepository.findById(usuarioId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        Comment comentario = new Comment();
-        comentario.setEvento(evento);
-        comentario.setAutor(usuario);
-        comentario.setTexto(texto);
-        comentario.setCriadoEm(LocalDateTime.now());
+        Comment comment = new Comment();
+        comment.setEvent(event);
+        comment.setAuthor(user);
+        comment.setText(text);
+        comment.setCreatedAt(LocalDateTime.now());
 
-        return comentarioRepository.save(comentario);
+        return commentRepository.save(comment);
     }
 
-    public Comment atualizarComentario(Long comentarioId, String novoTexto) {
-        Comment comentario = comentarioRepository.findById(comentarioId)
+    public Comment updateComment(Long commentId, String newText) {
+        Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comentário não encontrado"));
 
-        comentario.setTexto(novoTexto);
-        comentario.setAtualizadoEm(LocalDateTime.now());
+        comment.setText(newText);
+        comment.setUpdatedAt(LocalDateTime.now());
 
-        return comentarioRepository.save(comentario);
+        return commentRepository.save(comment);
     }
 
-    public void deletarComentario(Long comentarioId) {
-        Comment comentario = comentarioRepository.findById(comentarioId)
+    public void deleteComment(Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comentário não encontrado"));
 
-        comentarioRepository.delete(comentario);
+        commentRepository.delete(comment);
     }
 }

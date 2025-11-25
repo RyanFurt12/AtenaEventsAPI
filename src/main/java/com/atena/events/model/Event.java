@@ -29,27 +29,25 @@ public class Event implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String titulo;
-    private String descricao;
+    private String title;
+    private String type;
+    private String description;
     private LocalDateTime date;
 
-    // Dono do evento
     @ManyToOne
     @JoinColumn(name = "owner_id")
     @JsonBackReference
     private User owner;
 
-    // Participantes do evento (muitos para muitos)
     @ManyToMany
     @JoinTable(
-            name = "evento_participantes",
-            joinColumns = @JoinColumn(name = "evento_id"),
-            inverseJoinColumns = @JoinColumn(name = "usuario_id")
+            name = "event_participants",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private List<User> participantes;
+    private List<User> participants;
 
-    // Comentários do evento
-    @OneToMany(mappedBy = "evento", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<Comment> comentarios;
+    private List<Comment> comments;
 }
