@@ -8,5 +8,5 @@ import com.atena.events.model.Event;
 
 public interface EventRepository extends CrudRepository<Event, Long> {
     List<Event> findByOwnerId(Long ownerId);
-    List<Event> findByParticipantId(Long userId);
+    List<Event> findByParticipantsId(Long userId);
 }

@@ -61,7 +61,7 @@ public class EventService {
     }
 
     public List<Event> listEventsParticipatedBy(Long userId) {
-        return eventRepository.findByParticipantId(userId);
+        return eventRepository.findByParticipantsId(userId);
     }
 
     public List<Event> listRecommendedEvents() {
