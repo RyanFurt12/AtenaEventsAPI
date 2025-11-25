@@ -32,12 +32,12 @@ public class ParticipacaoController {
         return eventService.getOutParticipate(dto.getEventId(), dto.getUserId());
     }
 
-    @GetMapping("/event/{id}")
+    @GetMapping("/event/{eventId}")
     public List<User> listParticipantsByEventId(@PathVariable Long eventId) {
         return eventService.listParticipantsByEventId(eventId);
     }
 
-    @GetMapping("/user/{id}")
+    @GetMapping("/user/{userId}")
     public List<Event> listEventsByUserId(@PathVariable Long userId) {
         return eventService.listEventsByUserId(userId);
     }

@@ -34,18 +34,18 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long userId) {
-        return userService.getUserById(userId);
+    public User getUserById(@PathVariable Long id) {
+        return userService.getUserById(id);
     }
 
     @PutMapping("/{id}")
-    public User updateUserById(@PathVariable Long userId, @RequestBody RegisterDTO dto) {
-        return userService.updateUserById(userId, dto);
+    public User updateUserById(@PathVariable Long id, @RequestBody RegisterDTO dto) {
+        return userService.updateUserById(id, dto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUserById(@PathVariable Long userId) {
-        userService.deleteUserById(userId);
+    public ResponseEntity<?> deleteUserById(@PathVariable Long id) {
+        userService.deleteUserById(id);
         return ResponseEntity.ok().build();
     }
 }
