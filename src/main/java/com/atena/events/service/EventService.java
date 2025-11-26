@@ -33,6 +33,7 @@ public class EventService {
 
         Event event = new Event();
         event.setTitle(dto.getTitle());
+        event.setType(dto.getType());
         event.setDescription(dto.getDescription());
         event.setDate(dto.getDate());
         event.setOwner(owner);
@@ -70,7 +71,7 @@ public class EventService {
         Collections.shuffle(allEvents);
 
         return allEvents.stream()
-                .limit(5)
+                .limit(8)
                 .collect(Collectors.toList());
     }
 

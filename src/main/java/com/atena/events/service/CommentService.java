@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.atena.events.model.Comment;
 import com.atena.events.model.Event;
 import com.atena.events.model.User;
+import com.atena.events.model.dto.CommentResponseDTO;
 import com.atena.events.repository.CommentRepository;
 import com.atena.events.repository.EventRepository;
 import com.atena.events.repository.UserRepository;
@@ -25,8 +26,15 @@ public class CommentService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<Comment> listCommentsByEventId(Long eventId) {
-        return commentRepository.findByEventId(eventId);
+    public List<CommentResponseDTO> listCommentsByEventId(Long eventId) {
+        List<Comment> comments = commentRepository.findByEventId(eventId);
+
+        return comments.stream()
+                .map(c -> new CommentResponseDTO(
+                        c.getText(),
+                        c.getAuthor().getName(),
+                        c.getCreatedAt()))
+                .toList();
     }
 
     public Comment createComment(Long eventId, Long userId, String text) {

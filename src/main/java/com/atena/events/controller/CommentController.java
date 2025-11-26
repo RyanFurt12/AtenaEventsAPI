@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.atena.events.model.Comment;
 import com.atena.events.model.dto.CommentCreateDTO;
+import com.atena.events.model.dto.CommentResponseDTO;
 import com.atena.events.model.dto.CommentUpdateDTO;
 import com.atena.events.service.CommentService;
 
@@ -25,7 +26,7 @@ public class CommentController {
     private CommentService commentService;
 
     @GetMapping("/event/{eventId}")
-    public List<Comment> listCommentsByEventId(@PathVariable Long eventId) {
+    public List<CommentResponseDTO> listCommentsByEventId(@PathVariable Long eventId) {
         return commentService.listCommentsByEventId(eventId);
     }
 
