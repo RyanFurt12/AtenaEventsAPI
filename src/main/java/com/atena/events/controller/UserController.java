@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.atena.events.model.User;
 import com.atena.events.model.dto.LoginDTO;
 import com.atena.events.model.dto.RegisterDTO;
+import com.atena.events.model.dto.UserDTO;
 import com.atena.events.service.UserService;
 
 @RestController
@@ -24,22 +25,22 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
-    public User register(@RequestBody RegisterDTO dto) {
+    public UserDTO register(@RequestBody RegisterDTO dto) {
         return userService.register(dto);
     }
 
     @PostMapping("/login")
-    public User login(@RequestBody LoginDTO dto) {
+    public UserDTO login(@RequestBody LoginDTO dto) {
         return userService.login(dto);
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
+    public UserDTO getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
     }
 
     @PutMapping("/{id}")
-    public User updateUserById(@PathVariable Long id, @RequestBody RegisterDTO dto) {
+    public UserDTO updateUserById(@PathVariable Long id, @RequestBody RegisterDTO dto) {
         return userService.updateUserById(id, dto);
     }
 

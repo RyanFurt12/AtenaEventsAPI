@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import com.atena.events.model.User;
 import com.atena.events.model.dto.LoginDTO;
 import com.atena.events.model.dto.RegisterDTO;
+import com.atena.events.model.dto.UserDTO;
 import com.atena.events.repository.UserRepository;
 
 @Service
@@ -14,8 +15,7 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public User register(RegisterDTO dto) {
-
+    public UserDTO register(RegisterDTO dto) {
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new RuntimeException("Email já está em uso.");
         }
@@ -24,11 +24,17 @@ public class UserService {
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
         user.setPassword(dto.getPassword());
+        userRepository.save(user);
 
-        return userRepository.save(user);
+        UserDTO userResp = new UserDTO();
+        userResp.setId(user.getId());
+        userResp.setName(user.getName());
+        userResp.setEmail(user.getEmail());
+
+        return userResp;
     }
 
-    public User login(LoginDTO dto) {
+    public UserDTO login(LoginDTO dto) {
         User user = userRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
 
@@ -36,16 +42,29 @@ public class UserService {
             throw new RuntimeException("Senha incorreta.");
         }
 
-        return user;
+        UserDTO userResp = new UserDTO();
+        userResp.setId(user.getId());
+        userResp.setName(user.getName());
+        userResp.setEmail(user.getEmail());
+
+        return userResp;
     }
 
-    public User getUserById(Long userId) {
-        return userRepository.findById(userId)
+    public UserDTO getUserById(Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+
+        UserDTO userResp = new UserDTO();
+        userResp.setId(user.getId());
+        userResp.setName(user.getName());
+        userResp.setEmail(user.getEmail());
+
+        return userResp;
     }
 
-    public User updateUserById(Long userId, RegisterDTO dto) {
-        User user = getUserById(userId);
+    public UserDTO updateUserById(Long userId, RegisterDTO dto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
 
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
@@ -53,7 +72,14 @@ public class UserService {
             user.setPassword(dto.getPassword());
         }
 
-        return userRepository.save(user);
+        userRepository.save(user);
+
+        UserDTO userResp = new UserDTO();
+        userResp.setId(user.getId());
+        userResp.setName(user.getName());
+        userResp.setEmail(user.getEmail());
+
+        return userResp;
     }
 
     public void deleteUserById(Long id) {
