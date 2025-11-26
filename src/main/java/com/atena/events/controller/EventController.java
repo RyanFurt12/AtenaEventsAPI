@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.atena.events.model.Event;
-import com.atena.events.model.dto.EventDTO;
+import com.atena.events.model.dto.EventCreateDTO;
+import com.atena.events.model.dto.EventListResponseDTO;
 import com.atena.events.service.EventService;
 
 @RestController
@@ -31,7 +32,7 @@ public class EventController {
 
     @PostMapping("/create/{ownerId}")
     public ResponseEntity<Event> createEvent(
-            @RequestBody EventDTO dto,
+            @RequestBody EventCreateDTO dto,
             @PathVariable Long ownerId
     ) {
         return ResponseEntity.ok(eventService.createEvent(dto, ownerId));
@@ -40,7 +41,7 @@ public class EventController {
     @PutMapping("/{id}")
     public ResponseEntity<Event> updateEvent(
             @PathVariable Long id,
-            @RequestBody EventDTO dto
+            @RequestBody EventCreateDTO dto
     ) {
         return ResponseEntity.ok(eventService.updateEvent(id, dto));
     }
@@ -52,17 +53,17 @@ public class EventController {
     }
 
     @GetMapping("/created_by/{userId}")
-    public ResponseEntity<List<Event>> listEventsCreatedBy(@PathVariable Long userId) {
+    public ResponseEntity<List<EventListResponseDTO>> listEventsCreatedBy(@PathVariable Long userId) {
         return ResponseEntity.ok(eventService.listEventsCreatedBy(userId));
     }
 
     @GetMapping("/participated_by/{userId}")
-    public ResponseEntity<List<Event>> listEventsParticipatedBy(@PathVariable Long userId) {
+    public ResponseEntity<List<EventListResponseDTO>> listEventsParticipatedBy(@PathVariable Long userId) {
         return ResponseEntity.ok(eventService.listEventsParticipatedBy(userId));
     }
 
     @GetMapping("/recommended")
-    public ResponseEntity<List<Event>> listRecommendedEvents() {
+    public ResponseEntity<List<EventListResponseDTO>> listRecommendedEvents() {
         return ResponseEntity.ok(eventService.listRecommendedEvents());
     }
 }

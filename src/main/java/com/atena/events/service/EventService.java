@@ -2,14 +2,14 @@ package com.atena.events.service;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.atena.events.model.Event;
 import com.atena.events.model.User;
-import com.atena.events.model.dto.EventDTO;
+import com.atena.events.model.dto.EventCreateDTO;
+import com.atena.events.model.dto.EventListResponseDTO;
 import com.atena.events.repository.EventRepository;
 import com.atena.events.repository.UserRepository;
 
@@ -27,7 +27,7 @@ public class EventService {
                 .orElseThrow(() -> new RuntimeException("Evento não encontrado"));
     }
 
-    public Event createEvent(EventDTO dto, Long ownerId) {
+    public Event createEvent(EventCreateDTO dto, Long ownerId) {
         User owner = userRepository.findById(ownerId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
@@ -41,7 +41,7 @@ public class EventService {
         return eventRepository.save(event);
     }
 
-    public Event updateEvent(Long id, EventDTO dto) {
+    public Event updateEvent(Long id, EventCreateDTO dto) {
         Event event = getEvent(id);
         
         event.setTitle(dto.getTitle());
@@ -57,22 +57,29 @@ public class EventService {
         eventRepository.delete(event);
     }
 
-    public List<Event> listEventsCreatedBy(Long userId) {
-        return eventRepository.findByOwnerId(userId);
+    public List<EventListResponseDTO> listEventsCreatedBy(Long userId) {
+        return eventRepository.findByOwnerId(userId)
+                .stream()
+                .map(EventListResponseDTO::new)
+                .toList();
     }
 
-    public List<Event> listEventsParticipatedBy(Long userId) {
-        return eventRepository.findByParticipantsId(userId);
+    public List<EventListResponseDTO> listEventsParticipatedBy(Long userId) {
+        return eventRepository.findByParticipantsId(userId)
+                .stream()
+                .map(EventListResponseDTO::new)
+                .toList();
     }
 
-    public List<Event> listRecommendedEvents() {
+    public List<EventListResponseDTO> listRecommendedEvents() {
         List<Event> allEvents = (List<Event>) eventRepository.findAll();
 
         Collections.shuffle(allEvents);
 
         return allEvents.stream()
                 .limit(8)
-                .collect(Collectors.toList());
+                .map(EventListResponseDTO::new)
+                .toList();
     }
 
     public Event participate(Long eventId, Long userId) {

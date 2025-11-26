@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.atena.events.model.User;
 import com.atena.events.model.dto.LoginDTO;
 import com.atena.events.model.dto.RegisterDTO;
 import com.atena.events.model.dto.UserDTO;
