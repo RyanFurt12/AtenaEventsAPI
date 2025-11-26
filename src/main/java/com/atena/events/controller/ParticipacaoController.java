@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.atena.events.model.Event;
-import com.atena.events.model.User;
+import com.atena.events.model.dto.EventListResponseDTO;
 import com.atena.events.model.dto.ParticipateDTO;
+import com.atena.events.model.dto.UserDTO;
 import com.atena.events.service.EventService;
 
 @RestController
@@ -22,23 +22,23 @@ public class ParticipacaoController {
     @Autowired
     private EventService eventService;
 
-    @PostMapping("/in")
-    public Event participate(@RequestBody ParticipateDTO dto) {
-        return eventService.participate(dto.getEventId(), dto.getUserId());
+    @GetMapping("/event/{eventId}/user/{userId}")
+    public Boolean isParticipating(@PathVariable Long eventId, @PathVariable Long userId) {
+        return eventService.isParticipating(eventId, userId);
     }
 
-    @PostMapping("/out")
-    public Event getOutParticipate(@RequestBody ParticipateDTO dto) {
-        return eventService.getOutParticipate(dto.getEventId(), dto.getUserId());
+    @PostMapping("/toggle")
+    public Boolean participateToggle(@RequestBody ParticipateDTO dto) {
+        return eventService.participateToggle(dto.getEventId(), dto.getUserId());
     }
 
     @GetMapping("/event/{eventId}")
-    public List<User> listParticipantsByEventId(@PathVariable Long eventId) {
+    public List<UserDTO> listParticipantsByEventId(@PathVariable Long eventId) {
         return eventService.listParticipantsByEventId(eventId);
     }
 
     @GetMapping("/user/{userId}")
-    public List<Event> listEventsByUserId(@PathVariable Long userId) {
+    public List<EventListResponseDTO> listEventsByUserId(@PathVariable Long userId) {
         return eventService.listEventsByUserId(userId);
     }
 }

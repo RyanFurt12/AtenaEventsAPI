@@ -26,12 +26,7 @@ public class UserService {
         user.setPassword(dto.getPassword());
         userRepository.save(user);
 
-        UserDTO userResp = new UserDTO();
-        userResp.setId(user.getId());
-        userResp.setName(user.getName());
-        userResp.setEmail(user.getEmail());
-
-        return userResp;
+        return new UserDTO(user);
     }
 
     public UserDTO login(LoginDTO dto) {
@@ -42,24 +37,14 @@ public class UserService {
             throw new RuntimeException("Senha incorreta.");
         }
 
-        UserDTO userResp = new UserDTO();
-        userResp.setId(user.getId());
-        userResp.setName(user.getName());
-        userResp.setEmail(user.getEmail());
-
-        return userResp;
+        return new UserDTO(user);
     }
 
     public UserDTO getUserById(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
 
-        UserDTO userResp = new UserDTO();
-        userResp.setId(user.getId());
-        userResp.setName(user.getName());
-        userResp.setEmail(user.getEmail());
-
-        return userResp;
+        return new UserDTO(user);
     }
 
     public UserDTO updateUserById(Long userId, RegisterDTO dto) {
@@ -74,12 +59,7 @@ public class UserService {
 
         userRepository.save(user);
 
-        UserDTO userResp = new UserDTO();
-        userResp.setId(user.getId());
-        userResp.setName(user.getName());
-        userResp.setEmail(user.getEmail());
-
-        return userResp;
+        return new UserDTO(user);
     }
 
     public void deleteUserById(Long id) {

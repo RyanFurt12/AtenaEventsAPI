@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.atena.events.model.Event;
 import com.atena.events.model.dto.EventCreateDTO;
+import com.atena.events.model.dto.EventDTO;
 import com.atena.events.model.dto.EventListResponseDTO;
 import com.atena.events.service.EventService;
 
@@ -26,12 +26,12 @@ public class EventController {
     private EventService eventService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Event> getEvent(@PathVariable Long id) {
+    public ResponseEntity<EventDTO> getEvent(@PathVariable Long id) {
         return ResponseEntity.ok(eventService.getEvent(id));
     }
 
     @PostMapping("/create/{ownerId}")
-    public ResponseEntity<Event> createEvent(
+    public ResponseEntity<EventDTO> createEvent(
             @RequestBody EventCreateDTO dto,
             @PathVariable Long ownerId
     ) {
@@ -39,7 +39,7 @@ public class EventController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Event> updateEvent(
+    public ResponseEntity<EventDTO> updateEvent(
             @PathVariable Long id,
             @RequestBody EventCreateDTO dto
     ) {

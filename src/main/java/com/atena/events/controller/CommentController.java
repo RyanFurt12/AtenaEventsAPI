@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.atena.events.model.Comment;
 import com.atena.events.model.dto.CommentCreateDTO;
 import com.atena.events.model.dto.CommentResponseDTO;
 import com.atena.events.model.dto.CommentUpdateDTO;
@@ -31,7 +30,7 @@ public class CommentController {
     }
 
     @PostMapping
-    public Comment createComment(@RequestBody CommentCreateDTO dto) {
+    public CommentResponseDTO createComment(@RequestBody CommentCreateDTO dto) {
         return commentService.createComment(
                 dto.getEventId(),
                 dto.getUserId(),
@@ -40,7 +39,7 @@ public class CommentController {
     }
 
     @PutMapping("/{id}")
-    public Comment updateComment(
+    public CommentResponseDTO updateComment(
             @PathVariable Long id,
             @RequestBody CommentUpdateDTO dto
     ) {

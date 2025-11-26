@@ -30,14 +30,11 @@ public class CommentService {
         List<Comment> comments = commentRepository.findByEventId(eventId);
 
         return comments.stream()
-                .map(c -> new CommentResponseDTO(
-                        c.getText(),
-                        c.getAuthor().getName(),
-                        c.getCreatedAt()))
+                .map(CommentResponseDTO::new)
                 .toList();
     }
 
-    public Comment createComment(Long eventId, Long userId, String text) {
+    public CommentResponseDTO createComment(Long eventId, Long userId, String text) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Evento não encontrado"));
 
@@ -49,18 +46,20 @@ public class CommentService {
         comment.setAuthor(user);
         comment.setText(text);
         comment.setCreatedAt(LocalDateTime.now());
+        commentRepository.save(comment);
 
-        return commentRepository.save(comment);
+        return new CommentResponseDTO(comment);
     }
 
-    public Comment updateComment(Long commentId, String newText) {
+    public CommentResponseDTO updateComment(Long commentId, String newText) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comentário não encontrado"));
 
         comment.setText(newText);
         comment.setUpdatedAt(LocalDateTime.now());
+        commentRepository.save(comment);
 
-        return commentRepository.save(comment);
+        return new CommentResponseDTO(comment);
     }
 
     public void deleteComment(Long commentId) {

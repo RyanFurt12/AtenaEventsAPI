@@ -2,6 +2,8 @@ package com.atena.events.model.dto;
 
 import java.time.LocalDateTime;
 
+import com.atena.events.model.Comment;
+
 import lombok.Data;
 
 @Data
@@ -10,10 +12,10 @@ public class CommentResponseDTO {
     private String authorName;
     private LocalDateTime createdAt;
 
-    public CommentResponseDTO(String text, String userName, LocalDateTime createdAt) {
-        this.text = text;
-        this.authorName = userName;
-        this.createdAt = createdAt;
+    public CommentResponseDTO(Comment c) {
+        this.text = c.getText();
+        this.authorName = c.getAuthor().getName();
+        this.createdAt = c.getCreatedAt();
     }
 }
 
