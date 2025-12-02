@@ -13,8 +13,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
@@ -39,13 +37,8 @@ public class Event implements Serializable {
     @JsonBackReference
     private User owner;
 
-    @ManyToMany
-    @JoinTable(
-            name = "event_participants",
-            joinColumns = @JoinColumn(name = "event_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<User> participants;
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    private List<Participation> participations;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     @JsonManagedReference

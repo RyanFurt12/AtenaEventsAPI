@@ -25,8 +25,8 @@ public class User implements Serializable {
     @JsonManagedReference
     private List<Event> createdEvents;
 
-    @ManyToMany(mappedBy = "participants")
-    private List<Event> participatedEvents;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Participation> participations;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     @JsonManagedReference

@@ -28,11 +28,11 @@ public class EventDTO {
         this.date = event.getDate();
         this.ownerId = event.getOwner().getId();
         this.ownerName = event.getOwner().getName();
-        this.participantsIds = (event.getParticipants() == null)
+        this.participantsIds = (event.getParticipations() == null)
         ? new ArrayList<>()
-        : event.getParticipants().stream()
-            .filter(p -> p != null && p.getId() != null)
-            .map(p -> p.getId().toString())
+        : event.getParticipations().stream()
+            .filter(p -> p != null && p.getUser().getId() != null && p.getStatus() == "OK")
+            .map(p -> p.getUser().getId().toString())
             .collect(Collectors.toList());
     }
 }

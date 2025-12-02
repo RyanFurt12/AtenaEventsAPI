@@ -11,7 +11,6 @@ import com.atena.events.model.User;
 import com.atena.events.model.dto.EventCreateDTO;
 import com.atena.events.model.dto.EventDTO;
 import com.atena.events.model.dto.EventListResponseDTO;
-import com.atena.events.model.dto.UserDTO;
 import com.atena.events.repository.EventRepository;
 import com.atena.events.repository.UserRepository;
 
@@ -73,7 +72,7 @@ public class EventService {
     }
 
     public List<EventListResponseDTO> listEventsParticipatedBy(Long userId) {
-        return eventRepository.findByParticipantsId(userId)
+        return eventRepository.findByParticipations_User_Id(userId)
                 .stream()
                 .map(EventListResponseDTO::new)
                 .toList();
@@ -88,49 +87,5 @@ public class EventService {
                 .limit(8)
                 .map(EventListResponseDTO::new)
                 .toList();
-    }
-
-    public Boolean isParticipating(Long eventId, Long userId) {
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Evento não encontrado"));
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-        return event.getParticipants().contains(user);
-    }
-
-    public Boolean participateToggle(Long eventId, Long userId) {
-
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Evento não encontrado"));
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-        if (event.getParticipants().contains(user)) {
-            event.getParticipants().remove(user);
-        } else{
-            event.getParticipants().add(user);
-        }
-        eventRepository.save(event);
-
-        return event.getParticipants().contains(user);
-    }
-
-    public List<UserDTO> listParticipantsByEventId(Long eventId) {
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Evento não encontrado"));
-
-        return event.getParticipants().stream()
-                .map(UserDTO::new).toList();
-    }
-
-    public List<EventListResponseDTO> listEventsByUserId(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-        return user.getParticipatedEvents().stream()
-                .map(EventListResponseDTO::new).toList();
     }
 }
