@@ -1,7 +1,10 @@
 package com.atena.events.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.atena.events.model.User;
 import com.atena.events.model.dto.LoginDTO;
@@ -14,16 +17,47 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    private User getEntityUserById(Long userId){
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Usuário não encontrado."
+                ));
+    }
+
+    private boolean isValidEmail(String email) {
+        if (email == null) return false;
+
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        return email.matches(emailRegex);
+    }
+
+    private boolean isValidPassword(String password) {
+        if (password == null) return false;
+
+        String passwordRegex =
+            "^(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d@$!%*?&]{8,}$";
+
+        return password.matches(passwordRegex);
+    }
 
     public UserDTO register(RegisterDTO dto) {
-        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
-            throw new RuntimeException("Email já está em uso.");
-        }
+
+        if (!isValidEmail(dto.getEmail()) || userRepository.findByEmail(dto.getEmail()).isPresent()) 
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST, "Email inválido."
+            );
+
+        if (!isValidPassword(dto.getPassword())) throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST,
+            "Senha inválida. Deve conter ao menos 8 caracteres, uma letra maiúscula e um número."
+        );
 
         User user = new User();
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
         userRepository.save(user);
 
         return new UserDTO(user);
@@ -31,30 +65,32 @@ public class UserService {
 
     public UserDTO login(LoginDTO dto) {
         User user = userRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+                .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Usuário não encontrado."
+                ));
 
-        if (!user.getPassword().equals(dto.getPassword())) {
-            throw new RuntimeException("Senha incorreta.");
+        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST, "Senha incorreta."
+            );
         }
 
         return new UserDTO(user);
     }
 
     public UserDTO getUserById(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+        User user = getEntityUserById(userId);
 
         return new UserDTO(user);
     }
 
     public UserDTO updateUserById(Long userId, RegisterDTO dto) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+        User user = getEntityUserById(userId);
 
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
         if (dto.getPassword() != null) {
-            user.setPassword(dto.getPassword());
+            user.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
 
         userRepository.save(user);

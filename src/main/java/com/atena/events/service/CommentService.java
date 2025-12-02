@@ -4,7 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.atena.events.model.Comment;
 import com.atena.events.model.Event;
@@ -36,10 +38,14 @@ public class CommentService {
 
     public CommentResponseDTO createComment(Long eventId, Long userId, String text) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Evento não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Evento não encontrado"
+                ));
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Usuário não encontrado"
+                ));
 
         Comment comment = new Comment();
         comment.setEvent(event);
@@ -53,7 +59,9 @@ public class CommentService {
 
     public CommentResponseDTO updateComment(Long commentId, String newText) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comentário não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Comentario não encontrado"
+                ));
 
         comment.setText(newText);
         comment.setUpdatedAt(LocalDateTime.now());
@@ -64,7 +72,9 @@ public class CommentService {
 
     public void deleteComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comentário não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Comentario não encontrado"
+                ));
 
         commentRepository.delete(comment);
     }

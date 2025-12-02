@@ -9,7 +9,9 @@ import com.atena.events.repository.UserRepository;
 import com.atena.events.repository.ParticipationRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -27,10 +29,14 @@ public class ParticipationService {
 
     public ParticipateDTO create(ParticipateDTO participation) {
         User user = userRepository.findById(participation.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Usuario não encontrado"
+                ));
 
         Event event = eventRepository.findById(participation.getEventId())
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+                .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Evento não encontrado"
+                ));
 
         Participation p = new Participation();
         p.setUser(user);
@@ -44,14 +50,18 @@ public class ParticipationService {
 
     public ParticipateDTO findById(Long id) {
         Participation p = participationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Participation not found"));
+                .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Participação não encontrado"
+                ));
         
         return new ParticipateDTO(p);
     }
 
     public ParticipateDTO update(Long id, ParticipateDTO updated) {
         Participation current = participationRepository.findById(id)
-                        .orElseThrow(() -> new RuntimeException("Participation not found"));
+                        .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.NOT_FOUND, "Participação não encontrado"
+                        ));
 
         current.setStatus("OK");
         Participation p = participationRepository.save(current);

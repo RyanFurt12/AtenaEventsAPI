@@ -4,7 +4,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.atena.events.model.Event;
 import com.atena.events.model.User;
@@ -25,14 +27,18 @@ public class EventService {
 
     public EventDTO getEvent(Long id) {
         Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Evento não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Evento não encontrado"
+                ));
 
         return new EventDTO(event);
     }
 
     public EventDTO createEvent(EventCreateDTO dto, Long ownerId) {
         User owner = userRepository.findById(ownerId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Usuário não encontrado"
+                ));
 
         Event event = new Event();
         event.setTitle(dto.getTitle());
@@ -47,7 +53,9 @@ public class EventService {
 
     public EventDTO updateEvent(Long id, EventCreateDTO dto) {
         Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Evento não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Evento não encontrado"
+                ));
         
         event.setTitle(dto.getTitle());
         event.setType(dto.getType());
@@ -60,7 +68,9 @@ public class EventService {
 
     public void deleteEvent(Long id) {
         Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Evento não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Evento não encontrado"
+                ));
         eventRepository.delete(event);
     }
 
