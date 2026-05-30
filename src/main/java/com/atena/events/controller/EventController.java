@@ -2,53 +2,56 @@ package com.atena.events.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.atena.events.model.User;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import com.atena.events.model.dto.EventCreateDTO;
 import com.atena.events.model.dto.EventDTO;
 import com.atena.events.model.dto.EventListResponseDTO;
+import com.atena.events.model.dto.ParticipantSummaryDTO;
 import com.atena.events.service.EventService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/events")
 public class EventController {
 
-    @Autowired
-    private EventService eventService;
+    private final EventService eventService;
+
+    public EventController(EventService eventService) {
+        this.eventService = eventService;
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<EventDTO> getEvent(@PathVariable Long id) {
         return ResponseEntity.ok(eventService.getEvent(id));
     }
 
-    @PostMapping("/create/{ownerId}")
+    @PostMapping
     public ResponseEntity<EventDTO> createEvent(
-            @RequestBody EventCreateDTO dto,
-            @PathVariable Long ownerId
+            @Valid @RequestBody EventCreateDTO dto,
+            @AuthenticationPrincipal User currentUser
     ) {
-        return ResponseEntity.ok(eventService.createEvent(dto, ownerId));
+        return ResponseEntity.ok(eventService.createEvent(dto, currentUser.getId()));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<EventDTO> updateEvent(
             @PathVariable Long id,
-            @RequestBody EventCreateDTO dto
+            @Valid @RequestBody EventCreateDTO dto,
+            @AuthenticationPrincipal User currentUser
     ) {
-        return ResponseEntity.ok(eventService.updateEvent(id, dto));
+        return ResponseEntity.ok(eventService.updateEvent(id, dto, currentUser.getId()));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
-        eventService.deleteEvent(id);
+    public ResponseEntity<Void> deleteEvent(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User currentUser
+    ) {
+        eventService.deleteEvent(id, currentUser.getId());
         return ResponseEntity.noContent().build();
     }
 
@@ -65,5 +68,13 @@ public class EventController {
     @GetMapping("/recommended")
     public ResponseEntity<List<EventListResponseDTO>> listRecommendedEvents() {
         return ResponseEntity.ok(eventService.listRecommendedEvents());
+    }
+
+    @GetMapping("/{eventId}/participants")
+    public ResponseEntity<List<ParticipantSummaryDTO>> listParticipants(
+            @PathVariable Long eventId,
+            @AuthenticationPrincipal User currentUser
+    ) {
+        return ResponseEntity.ok(eventService.listParticipants(eventId, currentUser.getId()));
     }
 }

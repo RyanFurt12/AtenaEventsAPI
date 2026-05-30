@@ -1,36 +1,25 @@
 package com.atena.events.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.atena.events.model.dto.LoginDTO;
-import com.atena.events.model.dto.RegisterDTO;
+import com.atena.events.model.User;
+import com.atena.events.model.dto.AvatarUploadDTO;
+import com.atena.events.model.dto.ChangePasswordDTO;
+import com.atena.events.model.dto.EmailChangeRequestDTO;
 import com.atena.events.model.dto.UserDTO;
+import com.atena.events.model.dto.UserUpdateDTO;
 import com.atena.events.service.UserService;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @PostMapping("/register")
-    public UserDTO register(@RequestBody RegisterDTO dto) {
-        return userService.register(dto);
-    }
-
-    @PostMapping("/login")
-    public UserDTO login(@RequestBody LoginDTO dto) {
-        return userService.login(dto);
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping("/{id}")
@@ -39,13 +28,50 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public UserDTO updateUserById(@PathVariable Long id, @RequestBody RegisterDTO dto) {
-        return userService.updateUserById(id, dto);
+    public UserDTO updateUser(
+            @PathVariable Long id,
+            @Valid @RequestBody UserUpdateDTO dto,
+            @AuthenticationPrincipal User currentUser
+    ) {
+        return userService.updateUser(id, dto, currentUser.getId());
+    }
+
+    @PostMapping("/{id}/avatar")
+    public UserDTO uploadAvatar(
+            @PathVariable Long id,
+            @Valid @RequestBody AvatarUploadDTO dto,
+            @AuthenticationPrincipal User currentUser
+    ) {
+        return userService.updateAvatar(id, dto, currentUser.getId());
+    }
+
+    @PostMapping("/{id}/password")
+    public ResponseEntity<Void> changePassword(
+            @PathVariable Long id,
+            @Valid @RequestBody ChangePasswordDTO dto,
+            @AuthenticationPrincipal User currentUser
+    ) {
+        userService.changePassword(id, dto, currentUser.getId());
+        return ResponseEntity.noContent().build();
+    }
+
+    // Inicia a troca de email: envia link de confirmação para o novo endereço.
+    @PostMapping("/{id}/email")
+    public ResponseEntity<Void> requestEmailChange(
+            @PathVariable Long id,
+            @Valid @RequestBody EmailChangeRequestDTO dto,
+            @AuthenticationPrincipal User currentUser
+    ) {
+        userService.requestEmailChange(id, dto, currentUser.getId());
+        return ResponseEntity.accepted().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUserById(@PathVariable Long id) {
-        userService.deleteUserById(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Void> deleteUser(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User currentUser
+    ) {
+        userService.deleteUser(id, currentUser.getId());
+        return ResponseEntity.noContent().build();
     }
 }

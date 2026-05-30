@@ -1,0 +1,7 @@
+target
+.git
+.vscode
+*.log
+.env
+nginx.conf
+HELP.md

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,6 +32,9 @@ public class Event implements Serializable {
     private String type;
     private String description;
     private LocalDateTime date;
+
+    @Column(columnDefinition = "TEXT")
+    private String imageBase64;
 
     @ManyToOne
     @JoinColumn(name = "owner_id")

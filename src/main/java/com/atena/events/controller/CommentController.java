@@ -3,6 +3,7 @@ package com.atena.events.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.atena.events.model.User;
 import com.atena.events.model.dto.CommentCreateDTO;
 import com.atena.events.model.dto.CommentResponseDTO;
 import com.atena.events.model.dto.CommentUpdateDTO;
@@ -30,24 +32,27 @@ public class CommentController {
     }
 
     @PostMapping
-    public CommentResponseDTO createComment(@RequestBody CommentCreateDTO dto) {
-        return commentService.createComment(
-                dto.getEventId(),
-                dto.getUserId(),
-                dto.getText()
-        );
+    public CommentResponseDTO createComment(
+            @RequestBody CommentCreateDTO dto,
+            @AuthenticationPrincipal User currentUser
+    ) {
+        return commentService.createComment(dto.getEventId(), currentUser.getId(), dto.getText());
     }
 
     @PutMapping("/{id}")
     public CommentResponseDTO updateComment(
             @PathVariable Long id,
-            @RequestBody CommentUpdateDTO dto
+            @RequestBody CommentUpdateDTO dto,
+            @AuthenticationPrincipal User currentUser
     ) {
-        return commentService.updateComment(id, dto.getText());
+        return commentService.updateComment(id, dto.getText(), currentUser.getId());
     }
 
     @DeleteMapping("/{id}")
-    public void deleteComment(@PathVariable Long id) {
-        commentService.deleteComment(id);
+    public void deleteComment(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User currentUser
+    ) {
+        commentService.deleteComment(id, currentUser.getId());
     }
 }

@@ -18,6 +18,9 @@ public class EventDTO {
     private LocalDateTime date;
     private Long ownerId;
     private String ownerName;
+    private String ownerAvatarBase64;
+    private String ownerAvatarUrl;
+    private String imageBase64;
     private List<String> participantsIds;
 
     public EventDTO(Event event) {
@@ -28,10 +31,13 @@ public class EventDTO {
         this.date = event.getDate();
         this.ownerId = event.getOwner().getId();
         this.ownerName = event.getOwner().getName();
+        this.ownerAvatarBase64 = event.getOwner().getAvatarBase64();
+        this.ownerAvatarUrl = event.getOwner().getAvatarUrl();
+        this.imageBase64 = event.getImageBase64();
         this.participantsIds = (event.getParticipations() == null)
         ? new ArrayList<>()
         : event.getParticipations().stream()
-            .filter(p -> p != null && p.getUser().getId() != null && p.getStatus() == "OK")
+            .filter(p -> p != null && p.getUser().getId() != null && "OK".equals(p.getStatus()))
             .map(p -> p.getUser().getId().toString())
             .collect(Collectors.toList());
     }

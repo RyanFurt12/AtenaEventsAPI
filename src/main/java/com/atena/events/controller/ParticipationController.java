@@ -1,9 +1,12 @@
 package com.atena.events.controller;
 
 import com.atena.events.model.dto.ParticipateDTO;
+import com.atena.events.model.User;
 import com.atena.events.service.ParticipationService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,9 +44,11 @@ public class ParticipationController {
     }
 
     @PostMapping("/toggle/event/{eventId}/user/{userId}")
+    @PreAuthorize("#userId == #principal.id")
     public Boolean toggle(
             @PathVariable Long eventId,
-            @PathVariable Long userId
+            @PathVariable Long userId,
+            @AuthenticationPrincipal User principal
     ) {
         return participationService.toggle(eventId, userId);
     }

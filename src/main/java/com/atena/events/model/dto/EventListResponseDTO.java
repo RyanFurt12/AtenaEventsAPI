@@ -13,6 +13,7 @@ public class EventListResponseDTO {
     private String description;
     private String type;
     private LocalDateTime date;
+    private String imageBase64;
 
     public EventListResponseDTO(Event event) {
         this.id = event.getId();
@@ -20,5 +21,6 @@ public class EventListResponseDTO {
         this.description = event.getDescription();
         this.type = event.getType();
         this.date = event.getDate();
+        this.imageBase64 = event.getImageBase64();
     }
 }
