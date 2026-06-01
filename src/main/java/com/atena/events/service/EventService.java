@@ -1,5 +1,6 @@
 package com.atena.events.service;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,10 +24,13 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
+    private final MailService mailService;
 
-    public EventService(EventRepository eventRepository, UserRepository userRepository) {
+    public EventService(EventRepository eventRepository, UserRepository userRepository,
+                        MailService mailService) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
+        this.mailService = mailService;
     }
 
     @Transactional(readOnly = true)
@@ -106,6 +110,65 @@ public class EventService {
         return event.getParticipations().stream()
                 .map(ParticipantSummaryDTO::new)
                 .toList();
+    }
+
+    /**
+     * Envia uma notificação por email aos participantes do evento (apenas o dono).
+     * {@code phase} = "PRE" (lembrete, só antes da data do evento) | "POST"
+     * (agradecimento, só após a data). Cada fase pode ser enviada uma única vez.
+     * Participantes sem email (ex.: convidados) são ignorados.
+     *
+     * @return número de participantes que receberam o email
+     */
+    public int notifyParticipants(Long eventId, Long requesterId, String phase, String customMessage) {
+        Event event = findEventOrThrow(eventId);
+        verifyOwnership(event, requesterId);
+
+        boolean preEvent = "PRE".equalsIgnoreCase(phase);
+        boolean postEvent = "POST".equalsIgnoreCase(phase);
+        if (!preEvent && !postEvent) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Fase inválida. Use PRE ou POST.");
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        if (preEvent) {
+            if (event.getPreEventNotifiedAt() != null) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Lembrete pré-evento já enviado.");
+            }
+            if (event.getDate() != null && !event.getDate().isAfter(now)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "O lembrete pré-evento só pode ser enviado antes da data do evento.");
+            }
+        } else {
+            if (event.getPostEventNotifiedAt() != null) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Agradecimento pós-evento já enviado.");
+            }
+            if (event.getDate() != null && !event.getDate().isBefore(now)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "O agradecimento pós-evento só pode ser enviado após a data do evento.");
+            }
+        }
+
+        List<String> recipients = (event.getParticipations() == null ? List.<com.atena.events.model.Participation>of() : event.getParticipations())
+                .stream()
+                .filter(p -> p != null && "OK".equals(p.getStatus()) && p.getUser() != null)
+                .map(p -> p.getUser().getEmail())
+                .filter(email -> email != null && !email.isBlank())
+                .distinct()
+                .toList();
+
+        for (String email : recipients) {
+            mailService.sendEventNotification(email, event.getTitle(), preEvent, customMessage);
+        }
+
+        if (preEvent) {
+            event.setPreEventNotifiedAt(now);
+        } else {
+            event.setPostEventNotifiedAt(now);
+        }
+        eventRepository.save(event);
+
+        return recipients.size();
     }
 
     // ── Internal ─────────────────────────────────────────────────────────────

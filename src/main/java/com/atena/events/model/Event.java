@@ -33,6 +33,9 @@ public class Event implements Serializable {
     private String description;
     private LocalDateTime date;
 
+    private LocalDateTime preEventNotifiedAt;
+    private LocalDateTime postEventNotifiedAt;
+
     @Column(columnDefinition = "TEXT")
     private String imageBase64;
 

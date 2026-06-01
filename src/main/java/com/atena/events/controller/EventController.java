@@ -1,6 +1,7 @@
 package com.atena.events.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import com.atena.events.model.User;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import com.atena.events.model.dto.EventCreateDTO;
 import com.atena.events.model.dto.EventDTO;
 import com.atena.events.model.dto.EventListResponseDTO;
+import com.atena.events.model.dto.NotifyParticipantsDTO;
 import com.atena.events.model.dto.ParticipantSummaryDTO;
 import com.atena.events.service.EventService;
 import jakarta.validation.Valid;
@@ -76,5 +78,16 @@ public class EventController {
             @AuthenticationPrincipal User currentUser
     ) {
         return ResponseEntity.ok(eventService.listParticipants(eventId, currentUser.getId()));
+    }
+
+    @PostMapping("/{eventId}/notify")
+    public ResponseEntity<Map<String, Integer>> notifyParticipants(
+            @PathVariable Long eventId,
+            @RequestBody NotifyParticipantsDTO dto,
+            @AuthenticationPrincipal User currentUser
+    ) {
+        int sent = eventService.notifyParticipants(
+                eventId, currentUser.getId(), dto.getPhase(), dto.getCustomMessage());
+        return ResponseEntity.ok(Map.of("sent", sent));
     }
 }

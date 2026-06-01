@@ -46,6 +46,40 @@ public class MailService {
         mailSender.send(message);
     }
 
+    /**
+     * Notifica um participante sobre o evento. {@code preEvent=true} envia um
+     * lembrete (antes do evento); {@code false} envia um agradecimento (após o
+     * evento). {@code customMessage} é opcional — quando preenchido, é anexado
+     * ao corpo como mensagem do organizador.
+     */
+    public void sendEventNotification(String toEmail, String eventTitle,
+                                      boolean preEvent, String customMessage) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(from);
+        message.setTo(toEmail);
+
+        StringBuilder body = new StringBuilder();
+        if (preEvent) {
+            message.setSubject("AtenaEvents — Lembrete: " + eventTitle);
+            body.append("Olá!\n\n")
+                .append("Este é um lembrete de que o evento \"").append(eventTitle)
+                .append("\" do qual você é participante está chegando.\n")
+                .append("Esperamos você lá!\n");
+        } else {
+            message.setSubject("AtenaEvents — Obrigado por participar de " + eventTitle);
+            body.append("Olá!\n\n")
+                .append("Obrigado por participar do evento \"").append(eventTitle)
+                .append("\". Esperamos que tenha sido uma ótima experiência!\n");
+        }
+
+        if (customMessage != null && !customMessage.isBlank()) {
+            body.append("\nMensagem do organizador:\n").append(customMessage.trim()).append("\n");
+        }
+
+        message.setText(body.toString());
+        mailSender.send(message);
+    }
+
     public void sendEmailChangeConfirmation(String toEmail, String token) {
         String link = frontendUrl + "/confirm-email?token=" + token;
         SimpleMailMessage message = new SimpleMailMessage();

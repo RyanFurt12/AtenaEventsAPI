@@ -22,6 +22,8 @@ public class EventDTO {
     private String ownerAvatarUrl;
     private String imageBase64;
     private List<String> participantsIds;
+    private LocalDateTime preEventNotifiedAt;
+    private LocalDateTime postEventNotifiedAt;
 
     public EventDTO(Event event) {
         this.id = event.getId();
@@ -40,5 +42,7 @@ public class EventDTO {
             .filter(p -> p != null && p.getUser().getId() != null && "OK".equals(p.getStatus()))
             .map(p -> p.getUser().getId().toString())
             .collect(Collectors.toList());
+        this.preEventNotifiedAt = event.getPreEventNotifiedAt();
+        this.postEventNotifiedAt = event.getPostEventNotifiedAt();
     }
 }
