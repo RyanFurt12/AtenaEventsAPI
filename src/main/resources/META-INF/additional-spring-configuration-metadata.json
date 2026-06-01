@@ -1,0 +1,37 @@
+{
+  "properties": [
+    {
+      "name": "jwt.secret",
+      "type": "java.lang.String",
+      "description": "Chave secreta usada para assinar e validar os tokens JWT (mínimo 32 caracteres)."
+    },
+    {
+      "name": "jwt.access-token-expiration-ms",
+      "type": "java.lang.Long",
+      "description": "Validade do access token de contas completas, em milissegundos.",
+      "defaultValue": 900000
+    },
+    {
+      "name": "jwt.guest-token-expiration-ms",
+      "type": "java.lang.Long",
+      "description": "Validade do token de contas guest, em milissegundos.",
+      "defaultValue": 7200000
+    },
+    {
+      "name": "app.frontend-url",
+      "type": "java.lang.String",
+      "description": "URL base do frontend, usada para montar o redirect do callback OAuth2."
+    },
+    {
+      "name": "app.mail.from",
+      "type": "java.lang.String",
+      "description": "Endereço de remetente usado nos e-mails enviados pela aplicação."
+    },
+    {
+      "name": "app.security.reset-token-expiration-minutes",
+      "type": "java.lang.Long",
+      "description": "Validade dos tokens de reset de senha e troca de e-mail, em minutos.",
+      "defaultValue": 30
+    }
+  ]
+}
