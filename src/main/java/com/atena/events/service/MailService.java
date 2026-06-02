@@ -80,6 +80,27 @@ public class MailService {
         mailSender.send(message);
     }
 
+    /**
+     * Avisa um participante de que o quadro interativo do evento foi aberto,
+     * com link direto para a página do evento.
+     */
+    public void sendWhiteboardOpened(String toEmail, String eventTitle, Long eventId) {
+        String link = frontendUrl + "/events/" + eventId;
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(from);
+        message.setTo(toEmail);
+        message.setSubject("AtenaEvents — O quadro de \"" + eventTitle + "\" está aberto!");
+        message.setText(
+            "Olá!\n\n" +
+            "O quadro interativo do evento \"" + eventTitle + "\" acaba de ser aberto e está " +
+            "disponível por tempo limitado.\n" +
+            "Entre agora para deixar seus post-its (mensagens ou fotos polaroid):\n" +
+            link + "\n\n" +
+            "Aproveite — quando o tempo acabar, o quadro fica apenas como lembrança do evento.\n"
+        );
+        mailSender.send(message);
+    }
+
     public void sendEmailChangeConfirmation(String toEmail, String token) {
         String link = frontendUrl + "/confirm-email?token=" + token;
         SimpleMailMessage message = new SimpleMailMessage();

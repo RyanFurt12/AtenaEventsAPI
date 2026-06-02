@@ -62,6 +62,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/events/{id}").permitAll()
                 // Public comment reads
                 .requestMatchers(HttpMethod.GET, "/comments/event/{eventId}").permitAll()
+                // Public whiteboard read (POST/PUT/DELETE caem no anyRequest → ROLE_USER)
+                .requestMatchers(HttpMethod.GET, "/events/{eventId}/whiteboard").permitAll()
                 // Participation: guests and full users can toggle and check their own status
                 .requestMatchers(HttpMethod.POST,
                     "/participate/toggle/event/{eventId}/user/{userId}")

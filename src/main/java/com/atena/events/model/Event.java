@@ -36,6 +36,10 @@ public class Event implements Serializable {
     private LocalDateTime preEventNotifiedAt;
     private LocalDateTime postEventNotifiedAt;
 
+    // Quadro branco interativo: null = nunca ativado. Uma vez setado, nunca muda.
+    // Ativo enquanto now < whiteboardActivatedAt + 1h; depois congela (read-only).
+    private LocalDateTime whiteboardActivatedAt;
+
     @Column(columnDefinition = "TEXT")
     private String imageBase64;
 
