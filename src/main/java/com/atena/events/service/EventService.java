@@ -108,7 +108,13 @@ public class EventService {
         Event event = findEventOrThrow(eventId);
         verifyOwnership(event, requesterId);
         return event.getParticipations().stream()
-                .map(ParticipantSummaryDTO::new)
+                .map(p -> {
+                    ParticipantSummaryDTO dto = new ParticipantSummaryDTO(p);
+                    if (p.getUser() != null && !p.getUser().getId().equals(requesterId)) {
+                        dto.setEmail(maskEmail(dto.getEmail()));
+                    }
+                    return dto;
+                })
                 .toList();
     }
 
@@ -178,6 +184,26 @@ public class EventService {
                 .orElseThrow(() -> new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Evento não encontrado."
                 ));
+    }
+
+    /**
+     * Mascara um email para exibição ao dono do evento, ocultando o tamanho real:
+     * mantém apenas a primeira letra da parte local e o TLD do domínio.
+     * Ex.: {@code joao.silva@gmail.com} → {@code j***@***.com}.
+     */
+    private static String maskEmail(String email) {
+        if (email == null || email.isBlank()) {
+            return email;
+        }
+        int at = email.indexOf('@');
+        if (at <= 0) {
+            return "***";
+        }
+        String local = email.substring(0, at);
+        String domain = email.substring(at + 1);
+        int dot = domain.lastIndexOf('.');
+        String domainMasked = dot > 0 ? "***" + domain.substring(dot) : "***";
+        return local.charAt(0) + "***@" + domainMasked;
     }
 
     private void verifyOwnership(Event event, Long authenticatedUserId) {
